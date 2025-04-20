@@ -8,6 +8,7 @@ servers:
     description: Production server
   - url: https://hamiltontech-csmena-hr01-19859747.dev.odoo.com/
     description: staging server
+    
 tags:
   - name: Employees
     description: Operations related to employees
