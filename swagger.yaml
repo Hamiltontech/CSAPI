@@ -4,9 +4,10 @@ info:
   description: API for accessing HR-related data including employees, assignments, projects, and tasks
   version: 1.0.0
 servers:
-  - url: https://your-odoo-instance.com
+  - url: https://hamiltontech-csmena.odoo.com
     description: Production server
-
+  - url: https://hamiltontech-csmena-hr01-19859747.dev.odoo.com/
+    description: staging server
 tags:
   - name: Employees
     description: Operations related to employees
