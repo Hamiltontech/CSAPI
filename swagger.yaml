@@ -6,7 +6,7 @@ info:
 servers:
   - url: https://hamiltontech-csmena.odoo.com
     description: Production server
-  - url: https://hamiltontech-csmena-hr01-19859747.dev.odoo.com/
+  - url: https://hamiltontech-csmena-phase01-19867933.dev.odoo.com
     description: staging server
     
 tags:
