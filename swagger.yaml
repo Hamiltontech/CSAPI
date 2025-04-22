@@ -43,6 +43,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/EmployeeDetails'
+        security:
+        - bearerAuth: []
 
   /api/v1/employees:
     get:
@@ -64,6 +66,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/EmployeeWithAssignments'
+        security:
+        - bearerAuth: []
 
   /api/v1/Assignments:
     get:
@@ -85,6 +89,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Assignment'
+        security:
+        - bearerAuth: []
 
   /api/v1/projects:
     get:
@@ -106,6 +112,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Project'
+        security:
+        - bearerAuth: []
 
   /api/v1/tasks:
     get:
@@ -127,6 +135,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Task'
+        security:
+        - bearerAuth: []
 
   /api/v1/jobs:
     get:
@@ -148,6 +158,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Job'
+        security:
+        - bearerAuth: []
 
   /api/v1/departments:
     get:
@@ -169,6 +181,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Department'
+        security:
+        - bearerAuth: []
 
   /api/v1/assignment/create:
     post:
@@ -206,6 +220,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        security:
+        - bearerAuth: []
 
   /api/v1/assignment/{assignment_id}/update:
     put:
@@ -250,6 +266,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        security:
+        - bearerAuth: []
 
 components:
   schemas:
@@ -523,3 +541,6 @@ components:
             field_name:
               type: string
               example: Additional error details
+components:
+  securitySchemes:
+    bearerAuth:
