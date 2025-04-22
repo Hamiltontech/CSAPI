@@ -4,7 +4,7 @@ info:
   description: API for accessing HR, Projects, Tasks, and Assignments data from Odoo
   version: 1.0.0
 servers:
-  - url: https://hamiltontech-csmena-phase01-19867933.dev.odoo.com
+  - url: https://csmena-phase01-19903755.dev.odoo.com
     description: staging server
   - url: https://csmena.odoo.com
     description: Production server
@@ -28,6 +28,8 @@ paths:
       tags: [Employees]
       summary: Get detailed employee information
       description: Returns comprehensive details about all employees
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful operation
@@ -43,14 +45,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/EmployeeDetails'
-        security:
-        - bearerAuth: []
 
   /api/v1/employees:
     get:
       tags: [Employees]
       summary: Get employee information with active assignments
       description: Returns employee information including their active assignments
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful operation
@@ -66,14 +68,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/EmployeeWithAssignments'
-        security:
-        - bearerAuth: []
 
   /api/v1/Assignments:
     get:
       tags: [Assignments]
       summary: Get all assignments
       description: Returns information about all assignments
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful operation
@@ -89,14 +91,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Assignment'
-        security:
-        - bearerAuth: []
 
   /api/v1/projects:
     get:
       tags: [Projects]
       summary: Get all projects
       description: Returns information about all projects including their tasks
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful operation
@@ -112,14 +114,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Project'
-        security:
-        - bearerAuth: []
 
   /api/v1/tasks:
     get:
       tags: [Tasks]
       summary: Get all tasks
       description: Returns information about all tasks
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful operation
@@ -135,14 +137,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Task'
-        security:
-        - bearerAuth: []
 
   /api/v1/jobs:
     get:
       tags: [Jobs]
       summary: Get all job positions
       description: Returns information about all job positions
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful operation
@@ -158,14 +160,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Job'
-        security:
-        - bearerAuth: []
 
   /api/v1/departments:
     get:
       tags: [Departments]
       summary: Get all departments
       description: Returns information about all departments
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful operation
@@ -181,14 +183,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Department'
-        security:
-        - bearerAuth: []
 
   /api/v1/assignment/create:
     post:
       tags: [Assignments]
       summary: Create a new assignment
       description: Creates a new employee assignment
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -220,14 +222,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        security:
-        - bearerAuth: []
 
   /api/v1/assignment/{assignment_id}/update:
     put:
       tags: [Assignments]
       summary: Update an assignment
       description: Updates an existing assignment
+      security:
+        - bearerAuth: []
       parameters:
         - name: assignment_id
           in: path
@@ -266,10 +268,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        security:
-        - bearerAuth: []
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Available authorizations - Bearer token
+      
   schemas:
     EmployeeDetails:
       type: object
@@ -541,6 +547,3 @@ components:
             field_name:
               type: string
               example: Additional error details
-components:
-  securitySchemes:
-    bearerAuth:
