@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Odoo HR Integration API
+  title: Odoo CSMENA HR Integration API
   description: API for accessing HR, Projects, Tasks, and Assignments data from Odoo
   version: 1.0.0
 servers:
