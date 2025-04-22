@@ -23,7 +23,7 @@ tags:
     description: Operations related to job positions
 
 paths:
-  /employees/details:
+  /api/v1/employees/details:
     get:
       tags: [Employees]
       summary: Get detailed employee information
@@ -44,7 +44,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/EmployeeDetails'
 
-  /employees:
+  /api/v1/employees:
     get:
       tags: [Employees]
       summary: Get employee information with active assignments
@@ -65,7 +65,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/EmployeeWithAssignments'
 
-  /Assignments:
+  /api/v1/Assignments:
     get:
       tags: [Assignments]
       summary: Get all assignments
@@ -86,7 +86,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Assignment'
 
-  /projects:
+  /api/v1/projects:
     get:
       tags: [Projects]
       summary: Get all projects
@@ -107,7 +107,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Project'
 
-  /tasks:
+  /api/v1/tasks:
     get:
       tags: [Tasks]
       summary: Get all tasks
@@ -128,7 +128,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Task'
 
-  /jobs:
+  /api/v1/jobs:
     get:
       tags: [Jobs]
       summary: Get all job positions
@@ -149,7 +149,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Job'
 
-  /departments:
+  /api/v1/departments:
     get:
       tags: [Departments]
       summary: Get all departments
@@ -170,7 +170,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Department'
 
-  /assignment/create:
+  /api/v1/assignment/create:
     post:
       tags: [Assignments]
       summary: Create a new assignment
@@ -207,7 +207,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /assignment/{assignment_id}/update:
+  /api/v1/assignment/{assignment_id}/update:
     put:
       tags: [Assignments]
       summary: Update an assignment
