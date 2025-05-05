@@ -8,6 +8,9 @@ servers:
     description: staging server
   - url: https://csmena.odoo.com
     description: Production server
+  - url: https://csmena-stage02-20189466.dev.odoo.com/
+    description: staging server
+    
 tags:
   - name: Employees
     description: Operations related to employees
