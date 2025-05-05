@@ -4,12 +4,10 @@ info:
   description: API for accessing HR, Projects, Tasks, and Assignments data from Odoo
   version: 1.0.0
 servers:
-  - url: https://csmena-training-20065801.dev.odoo.com/
+  - url: https://csmena-stage02-20189466.dev.odoo.com/
     description: staging server
   - url: https://csmena.odoo.com
     description: Production server
-  - url: https://csmena-stage02-20189466.dev.odoo.com/
-    description: staging server
     
 tags:
   - name: Employees
