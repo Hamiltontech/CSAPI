@@ -22,6 +22,8 @@ tags:
     description: Operations related to departments
   - name: Jobs
     description: Operations related to job positions
+  - name: Payroll
+    description: Operations related to payroll & attendance.
 
 paths:
   /api/v1/employees/details:
@@ -269,6 +271,121 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                
+  /api/v1/payroll-lookups:
+    get:
+      tags: [Payroll]
+      summary: Lookup for payroll endpoint
+      description: Returns information about the payroll endpoints
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          description: type of the lookup values requested
+          required: true
+          schema:
+            type: string
+            # default: all
+            enum:
+              - work_entry
+              - salary_structure
+              - time_off
+              - shift
+              - all
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    $ref: '#/components/schemas/PayrollLookups'
+      
+  /api/v1/schedule/create:
+    post:
+      tags: [Payroll]
+      summary: Schedule a timeslot
+      description: Records a scheduled timeslot where an employee works on a project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleInput'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    $ref: '#/components/schemas/Schedule'
+      
+  /api/v1/attendance/create:
+    post:
+      tags: [Payroll]
+      summary: Record the attendence of an employee
+      description: Creates a record of when an employee had checked-in & checked-out
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceInput'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    $ref: '#/components/schemas/Attendance'
+  /api/v1/work-entry/create:
+    post:
+      tags: [Payroll]
+      summary: Create a work-entry
+      description: Creates a record of a work-entry regarding an employee
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkEntryInput'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    $ref: '#/components/schemas/WorkEntry'
 
 components:
   securitySchemes:
@@ -533,6 +650,202 @@ components:
               type: string
               example: IT
 
+    WorkEntryType:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name: 
+          type: string
+          example: Attendance
+    
+    SalaryStructureType:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name: 
+          type: string
+          example: Employee
+
+    TimeOffType:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name: 
+          type: string
+          example: Paid Time Off
+
+    ShiftType:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Keeta
+
+    PayrollLookups:
+      type: object
+      properties:
+        work_entry:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkEntryType'
+        salary_structure:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalaryStructureType'
+        time_off:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeOffType'
+        shift:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftType'
+
+    Schedule:
+      type: object
+      properties:
+        schedule_id:
+          type: integer
+          example: 11
+        start_datetime:
+          type: string
+          format: date-time
+          example: "2025-07-06 00:00:00"
+        end_datetime:
+          type: string
+          format: date-time
+          example: "2025-07-06 05:00:59"
+        project_id:
+          type: integer
+          example: 34
+        employee_id:
+          type: integer
+          example: 8815
+        shift_id:
+          type: integer
+          example: 1
+        note:
+          type: string
+          example: testing schedule
+
+    ScheduleInput:
+      type: object
+      properties:
+        hr_id:
+          type: integer
+          example: 4049
+        start_datetime:
+          type: string
+          format: date-time
+          example: "2025-07-06 00:00:00"
+        end_datetime:
+          type: string
+          format: date-time
+          example: "2025-07-06 05:00:59"
+        shift_id:
+          type: integer
+          example: 1
+        note:
+          type: string
+          example: testing schedule
+
+
+    Attendance:
+      type: object
+      properties:
+        attendance_id:
+          type: integer
+          example: 22
+        check_in:
+            type: string
+            format: date-time
+            example: "2025-06-05 07:14:00"
+        check_out:
+            type: string
+            format: date-time
+            example: "2025-06-05 12:14:15"
+        hr_id:
+          type: integer
+          example: 5436
+        worked_hours:
+          type: number
+          example: 4.77
+
+    AttendanceInput:
+      type: object
+      properties:
+        check_in:
+          type: string
+          format: date-time
+          example: "2025-06-03 07:14:00"
+        check_out:
+          type: string
+          format: date-time
+          example: "2025-06-03 12:14:15"
+        hr_id:
+          type: integer
+          example: 4536
+
+    WorkEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 395145
+        company_id:
+          type: integer
+          example: 1
+        date_start:
+          type: string
+          format: date-time
+          example: "2025-05-31 10:26:12"
+        date_stop:
+          type: string
+          format: date-time
+          example: "2025-06-02 08:00:00"
+        display_name:
+          type: string
+          example: "Overtime Hours: MUHANAD AHMAD SHAKER ALGHARBAT"
+        duration:
+          type: number
+          example: 45.56
+        hr_id:
+          type: integer
+          example: 55
+        state:
+          type: string
+          example: conflict
+        work_entry_type_id:
+          type: integer
+          example: 2
+
+    WorkEntryInput:
+      type: object
+      properties:
+        date_start:
+          type: string
+          format: date-time
+          example: "2025-05-31 10:26:12"
+        date_stop:
+          type: string
+          format: date-time
+          example: "2025-06-02 08:00:00"
+        hr_id:
+          type: integer
+          example: 55
+        work_entry_type_id:
+          type: integer
+          example:  2
+
     ErrorResponse:
       type: object
       properties:
@@ -548,3 +861,6 @@ components:
             field_name:
               type: string
               example: Additional error details
+              
+              
+              
