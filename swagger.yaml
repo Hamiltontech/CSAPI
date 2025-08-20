@@ -307,7 +307,7 @@ paths:
                   message:
                     $ref: '#/components/schemas/PayrollLookups'
       
-  /api/v1/schedule/create:
+  /api/v1/schedule/upsert:
     post:
       tags: [Payroll]
       summary: Schedule a timeslot
@@ -360,6 +360,7 @@ paths:
                     example: success
                   message:
                     $ref: '#/components/schemas/Attendance'
+
   /api/v1/work-entry/create:
     post:
       tags: [Payroll]
@@ -386,6 +387,27 @@ paths:
                     example: success
                   message:
                     $ref: '#/components/schemas/WorkEntry'
+  
+  /api/v1/shifts/upsert:
+    post:
+      tags: [Payroll]
+      summary: Create a shift
+      description: Creates a record of a shift for a project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShiftInput'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Shift"
 
 components:
   securitySchemes:
@@ -845,6 +867,40 @@ components:
         work_entry_type_id:
           type: integer
           example:  2
+
+    Shift:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        shif_id:
+          type: integer
+          example: 16
+        message:
+          type: string
+          example: "Shift updated successfully"
+
+    ShiftInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Morning Shift79"
+        start_time:
+          type: string
+          description: Time in HH:mm:ss format
+          example: "09:00"
+        end_time:
+          type: string
+          description: Time in HH:mm:ss format
+          example: "17:00"
+        duration_days:
+          type: integer
+          example: 1
+        project_id:
+          type: integer
+          example: 1
 
     ErrorResponse:
       type: object
