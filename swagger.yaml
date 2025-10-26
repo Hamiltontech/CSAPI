@@ -1200,21 +1200,3 @@ components:
           type: integer
           example: 1
 
-    ErrorResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: error
-        message:
-          type: string
-          example: Error description
-        details:
-          type: object
-          properties:
-            field_name:
-              type: string
-              example: Additional error details
-              
-              
-              
