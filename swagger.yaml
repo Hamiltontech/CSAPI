@@ -369,17 +369,6 @@ paths:
       description: |
         Creates multiple work entries for an employee and optionally attaches fixed allowances/deductions.
         All work entries in the batch will have the same effective_date if provided.
-
-        ## Timezone Handling
-        - Send times in the employee's local timezone (Jordan or Saudi Arabia)
-        - The API automatically detects the timezone from the employee's company country
-        - Times are converted to UTC for storage
-        - Response contains UTC times
-
-        ## Benefits
-        - Benefits are only attached to the first work entry in the batch
-        - Supports both legacy format (array of IDs) and new format (array of objects with factors)
-        - Factors allow applying multipliers to benefit amounts
       operationId: createWorkEntryBatch
       tags:
         - Work Entries
