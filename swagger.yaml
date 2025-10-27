@@ -289,6 +289,8 @@ paths:
             # default: all
             enum:
               - work_entry
+              - allowance
+              - deduction
               - salary_structure
               - time_off
               - shift
