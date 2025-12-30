@@ -24,6 +24,8 @@ tags:
     description: Operations related to job positions
   - name: Payroll
     description: Operations related to payroll & attendance.
+  - name: Authintication
+    description: Operations related to authintication
 
 paths:
   /api/v1/employees/details:
@@ -523,6 +525,80 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Shift"
+  /api/v1/auth/token:
+    post:
+      tags: [Authintication]
+      summary: Create/Update the token used by a user
+      description: Creates/Updates a record of the token used by a specific user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthTokenInput'
+      responses:
+        '200':
+          description: Successful Operation
+          headers:
+            Set-Cookie:
+              description: Authintication cookie 'session_id'
+              schema:
+                type: string
+              example: "session_id=T-LXasrzqNr1vULGJ9dLu-5pmeDzkcj6diFHsvn58X6agm7GtOAXh-7Q91K3YVYS6XWK6F7kyJCN7ig4rwBP; Path=/; Secure; HttpOnly; Expires=Tue, 06 Jan 2026 07:40:41 GMT;"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthToken"
+  
+  /api/v1/auth/login:
+    post:
+      tags: [Authintication]
+      summary: Returns a session id corresponding to the login token's  user account
+      description: Returns a session id keeping the user logged into their account if they provide the correct token
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginInput'
+      responses:
+        '200':
+          description: Successful Operation
+          headers:
+            Set-Cookie:
+              description: Authintication cookie 'session_id'
+              schema:
+                type: string
+              example: "session_id=w-0uE9Wk5NTJLQnNfz61bhifJCdvsC2i0KTOTA9F2Zb0CW5Zrazte5j7K5gMzPVov3Mws9gEmrjpR1L6qWtN; Path=/; Secure; HttpOnly; Expires=Tue, 06 Jan 2026 07:13:00 GMT;"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLogin"
+  
+  /api/v1/auth/logout:
+    post:
+      tags: [Authintication]
+      summary: Returns a session id corresponding to the login token's  user account
+      description: Returns a session id keeping the user logged into their account if they provide the correct token
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLogoutInput'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLogout"
 
 components:
   securitySchemes:
@@ -1190,4 +1266,73 @@ components:
         project_id:
           type: integer
           example: 1
+
+    AuthToken:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "token saved successfully"
+
+    AuthTokenInput:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "agggvgggbc"
+        user_id:
+          type: integer
+          example: 57
+
+    AuthLogin:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: object
+          properties:
+            session_id:
+              type: string
+              example: "dmM8r0G8zjuSXqTm8RHSSGRk8wugyoRy17uhgISVa5jinBQcQ9PfIfBtkeS481KIYcbnMghEOknZLza3ZkNe"
+            user_id:
+              type: integer
+              example: 57
+            login:
+              type: string
+              example: "Abd9811@gmail.com"
+            name:
+              type: string
+              example: "Abdullah Ahmed Mohammed Awaji"
+
+    AuthLoginInput:
+      type: object
+      properties:
+        login:
+          type: string
+          example: "Abd9811@gmail.com"
+        token:
+          type: string
+          example: "agggvgggbc"
+
+    AuthLogout:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Logged successfully"
+
+    AuthLogoutInput:
+      type: object
+      properties:
+        login:
+          type: string
+          example: "Abd9811@gmail.com"
 
