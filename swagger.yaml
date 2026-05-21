@@ -600,6 +600,110 @@ paths:
               schema:
                 $ref: "#/components/schemas/AuthLogout"
 
+  /api/v1/auth/login_redirect:
+    get:
+      tags: [Authintication]
+      summary: Authenticate user via query parameters and redirect to Odoo portal
+      description: Validates login and API token, sets the session cookie, and redirects to the Odoo portal page (default `/my`).
+      parameters:
+        - name: login
+          in: query
+          description: User login email
+          required: true
+          schema:
+            type: string
+            example: m.tamimi@csmena.com
+        - name: token
+          in: query
+          description: User API token
+          required: true
+          schema:
+            type: string
+            example: VC5mRJIRvf-X56asMRvYQmMVvXmOjuWbB9kJlbSctbUxoupqHpsLjSMCeZQbAk7XW68TqLd7g66jJDcad-TL
+        - name: redirect
+          in: query
+          description: Target path to redirect to after successful authentication (defaults to `/my`)
+          required: false
+          schema:
+            type: string
+            example: /portal
+      responses:
+        '303':
+          description: Successful authentication, redirecting to the target page
+          headers:
+            Set-Cookie:
+              description: Authentication cookie 'session_id'
+              schema:
+                type: string
+                example: "session_id=w-0uE9Wk5NTJLQnNfz61bhifJCdvsC2i0KTOTA9F2Zb0CW5Zrazte5j7K5gMzPVov3Mws9gEmrjpR1L6qWtN; Path=/; Secure; HttpOnly;"
+            Location:
+              description: Target URL for redirection
+              schema:
+                type: string
+                example: /portal
+        '400':
+          description: Missing required parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid login credentials or inactive account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/contracts:
+    get:
+      tags: [Employees]
+      summary: Get employee contracts
+      description: Returns all contracts associated with employees. Can be filtered by employee_id or hrid.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employee_id
+          in: query
+          description: Filter contracts by Employee ID
+          required: false
+          schema:
+            type: integer
+            example: 1223
+        - name: hrid
+          in: query
+          description: Filter contracts by Employee HRID
+          required: false
+          schema:
+            type: string
+            example: 3513
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmployeeContract'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -646,6 +750,10 @@ components:
         job_title:
           type: string
           example: Software Developer
+        login_user_id:
+          type: integer
+          nullable: true
+          example: 2
         active_assignment:
           type: array
           items:
@@ -1336,3 +1444,39 @@ components:
           type: string
           example: "Abd9811@gmail.com"
 
+    EmployeeContract:
+      type: object
+      properties:
+        employee_id:
+          type: integer
+          example: 1223
+        hrid:
+          type: string
+          example: "3513"
+        contracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractDetails'
+
+    ContractDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        date_start:
+          type: string
+          format: date
+          example: "2026-01-01"
+        date_end:
+          type: string
+          format: date
+          example: "2026-12-31"
+        state:
+          type: string
+          example: "open"
+        benefits:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3]
