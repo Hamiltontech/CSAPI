@@ -26,6 +26,8 @@ tags:
     description: Operations related to payroll & attendance.
   - name: Authintication
     description: Operations related to authintication
+  - name: Time Off
+    description: Operations related to employee time off, leave types, allocations, and requests
 
 paths:
   /api/v1/employees/details:
@@ -693,6 +695,282 @@ paths:
                       $ref: '#/components/schemas/EmployeeContract'
         '400':
           description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/timeoff/types:
+    get:
+      tags: [Time Off]
+      summary: Get all Time Off types
+      description: |
+        Lookup API to retrieve all available time off types (leave types) configured in Odoo.
+        
+        **Important Notes:**
+        - By default, only active time off types are returned.
+        - Pass `active_only=false` to include archived time off types.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: active_only
+          in: query
+          description: Filter active status. Set to 'false' to include archived types (defaults to true).
+          required: false
+          schema:
+            type: boolean
+            default: true
+            example: true
+      responses:
+        '200':
+          description: Successful retrieval of time off types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeOffType'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/timeoff/allocations:
+    get:
+      tags: [Time Off]
+      summary: Get employee time off allocations
+      description: |
+        Retrieves leave allocations for a specific employee or for all employees.
+        
+        **Key Business Scenarios & Parameters:**
+        1. **Single Employee Query**:
+           - Must pass either `employee_id` (Odoo database ID) or `hrid` (Company HRID).
+        2. **All Employees Query**:
+           - Pass `all=true` (or set `employee_id=all` / `hrid=all`) to retrieve allocations for all active employees across the entire system.
+        3. **Dynamic Display Format**:
+           - Allocations based on hours (`type_request_unit: hour`) return `number_of_hours_display`.
+           - Allocations based on days return `number_of_days_display`.
+        4. **Filtering**:
+           - `state`: Filter by allocation state (e.g., `validate` for approved allocations, `confirm`, etc.).
+           - `holiday_status_id`: Filter allocations by a specific time off type ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employee_id
+          in: query
+          description: Odoo employee database ID (or 'all' to query all employees)
+          required: false
+          schema:
+            type: string
+            example: "10008"
+        - name: hrid
+          in: query
+          description: Employee HRID (or 'all' to query all employees)
+          required: false
+          schema:
+            type: string
+            example: "22722"
+        - name: all
+          in: query
+          description: Set to true to retrieve allocations for all employees
+          required: false
+          schema:
+            type: boolean
+            example: false
+        - name: state
+          in: query
+          description: Filter allocations by status (e.g. validate, confirm)
+          required: false
+          schema:
+            type: string
+            example: validate
+        - name: holiday_status_id
+          in: query
+          description: Filter allocations by Time Off Type ID
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Successful retrieval of employee allocations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmployeeAllocation'
+        '400':
+          description: Missing mandatory parameters or invalid format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags: [Time Off]
+      summary: Get employee time off allocations (POST body alternative)
+      description: |
+        Alternative method to query employee allocations by providing parameters in a JSON request body.
+        Supports the exact same query parameters as the GET endpoint (`employee_id`, `hrid`, `all`, `state`, `holiday_status_id`).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employee_id:
+                  type: integer
+                  description: Odoo employee database ID
+                  example: 10008
+                hrid:
+                  type: string
+                  description: Employee HRID
+                  example: "22722"
+                all:
+                  type: boolean
+                  description: Set to true to retrieve allocations for all employees
+                  example: false
+                state:
+                  type: string
+                  description: Filter allocations by status (e.g. validate)
+                  example: validate
+                holiday_status_id:
+                  type: integer
+                  description: Filter by Time Off Type ID
+                  example: 1
+      responses:
+        '200':
+          description: Successful retrieval of employee allocations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmployeeAllocation'
+        '400':
+          description: Missing mandatory parameters or invalid format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/timeoff/upsert:
+    post:
+      tags: [Time Off]
+      summary: Create or update (upsert) employee time off request
+      description: |
+        Creates a new time off request or updates an existing one, matching the business logic of Odoo's Time Off form (`hr_holidays.hr_leave_view_form`).
+        
+        **Important Cases & Business Rules:**
+        
+        1. **Create vs. Update (Upsert)**:
+           - **Create**: Omit `leave_id`. Provide `employee_id` (or `hrid`), `holiday_status_id`, and requested dates/hours.
+           - **Update**: Provide `leave_id` (or `id`) to update an existing `hr.leave` record. The updated duration is recalculated and re-validated.
+        
+        2. **Employee Identification**:
+           - Supports either Odoo DB ID (`employee_id`) or corporate HRID (`hrid`).
+        
+        3. **Custom Hours Mode (`request_unit_hours: true`)**:
+           - Enables requesting fractional / partial days by specific hours.
+           - `request_hour_from` and `request_hour_to` can be provided as decimal numbers (e.g., `8.5` for 08:30, `16.0` for 16:00) or `"HH:MM"` formatted strings (e.g., `"08:30"`, `"16:00"`).
+           - `request_date_to` is optional in hours mode (defaults to `request_date_from`).
+           - `request_hour_from` must be strictly earlier than `request_hour_to`.
+        
+        4. **Full Days Mode (`request_unit_hours: false`)**:
+           - Standard daily leave spanning from `request_date_from` to `request_date_to`.
+        
+        5. **Schedule-Independent Allocation Deduction (`ignore_working_schedule`)**:
+           - In standard Odoo, leave requests on non-working days (weekends, off-days) or outside shift hours evaluate to 0 hours/days, preventing proper allocation deduction.
+           - **This integration guarantees deduction regardless of the employee's working schedule/calendar.** The requested duration is strictly computed and deducted from the employee's allocation balance.
+        
+        6. **Direct Validation / Auto-Approval**:
+           - Set `validate: true` (or `auto_approve: true`) in the request payload to immediately approve and validate the leave request (`state: 'validate'`).
+           - If false, the record is created in `confirm` state for manager review.
+        
+        7. **Response Data**:
+           - Returns `duration_display` (e.g. `"1.00 days"`, `"3.00 hours"`), `number_of_days`, `number_of_hours`, `date_from`, `date_to` (UTC datetime), and full record details.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeOffUpsertInput'
+      responses:
+        '200':
+          description: Time off request created or updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    $ref: '#/components/schemas/TimeOffRecord'
+        '400':
+          description: Validation error (e.g. inverted dates/hours, insufficient allocation, validation rejected by Odoo)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee, leave type, or leave record not found
           content:
             application/json:
               schema:
@@ -1480,3 +1758,206 @@ components:
           items:
             type: integer
           example: [1, 2, 3]
+
+    EmployeeAllocation:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Allocation ID
+          example: 45
+        holiday_status_id:
+          type: integer
+          description: Time Off Type ID
+          example: 1
+        holiday_status_name:
+          type: string
+          description: Time Off Type Name
+          example: "Paid Time Off"
+        employee_id:
+          type: integer
+          description: Odoo employee database ID
+          example: 10008
+        employee_name:
+          type: string
+          description: Full name of employee
+          example: "John Doe"
+        hrid:
+          type: string
+          description: Employee HRID
+          example: "22722"
+        date_from:
+          type: string
+          format: date
+          nullable: true
+          description: Validity start date of allocation
+          example: "2026-01-01"
+        date_to:
+          type: string
+          format: date
+          nullable: true
+          description: Validity end date of allocation
+          example: "2026-12-31"
+        state:
+          type: string
+          description: Allocation status
+          example: "validate"
+        number_of_days_display:
+          type: number
+          format: float
+          description: Number of days allocated (present when leave type unit is days)
+          example: 21.0
+        number_of_hours_display:
+          type: number
+          format: float
+          description: Number of hours allocated (present when leave type unit is hours)
+          example: 8.0
+
+    TimeOffUpsertInput:
+      type: object
+      required:
+        - holiday_status_id
+        - request_date_from
+      properties:
+        leave_id:
+          type: integer
+          description: ID of existing leave request to update. Leave empty or omit when creating a new request.
+          example: 86
+        employee_id:
+          type: integer
+          description: Odoo employee database ID. Mandatory if hrid is not provided.
+          example: 10008
+        hrid:
+          type: string
+          description: Employee HRID. Mandatory if employee_id is not provided.
+          example: "22722"
+        holiday_status_id:
+          type: integer
+          description: Time Off Type ID
+          example: 1
+        request_date_from:
+          type: string
+          format: date
+          description: Start date in YYYY-MM-DD format
+          example: "2026-10-15"
+        request_date_to:
+          type: string
+          format: date
+          description: End date in YYYY-MM-DD format. Optional in custom hours mode (defaults to request_date_from).
+          example: "2026-10-15"
+        request_unit_hours:
+          type: boolean
+          description: Set to true to request custom hours, or false for full days.
+          example: true
+        request_hour_from:
+          oneOf:
+            - type: number
+              format: float
+              example: 9.0
+            - type: string
+              example: "09:00"
+          description: Starting hour as decimal (e.g. 9.5 for 09:30) or 'HH:MM' string (e.g. '09:30'). Required when request_unit_hours is true.
+        request_hour_to:
+          oneOf:
+            - type: number
+              format: float
+              example: 12.0
+            - type: string
+              example: "12:00"
+          description: Ending hour as decimal (e.g. 12.0) or 'HH:MM' string (e.g. '12:00'). Required when request_unit_hours is true.
+        name:
+          type: string
+          description: Description or reason for the time off request
+          example: "Personal appointment"
+        validate:
+          type: boolean
+          description: Set to true to automatically validate and approve the time off request upon creation/update
+          default: false
+          example: true
+
+    TimeOffRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Time off record ID (hr.leave ID)
+          example: 86
+        employee_id:
+          type: integer
+          description: Odoo employee database ID
+          example: 10008
+        employee_name:
+          type: string
+          description: Employee name
+          example: "John Doe"
+        hrid:
+          type: string
+          description: Employee HRID
+          example: "22722"
+        holiday_status_id:
+          type: integer
+          description: Time Off Type ID
+          example: 1
+        holiday_status_name:
+          type: string
+          description: Time Off Type Name
+          example: "Paid Time Off"
+        request_date_from:
+          type: string
+          format: date
+          description: Requested start date
+          example: "2026-10-15"
+        request_date_to:
+          type: string
+          format: date
+          description: Requested end date
+          example: "2026-10-15"
+        request_unit_hours:
+          type: boolean
+          description: Whether custom hours were used
+          example: true
+        request_hour_from:
+          type: number
+          format: float
+          nullable: true
+          description: Requested starting hour
+          example: 9.0
+        request_hour_to:
+          type: number
+          format: float
+          nullable: true
+          description: Requested ending hour
+          example: 12.0
+        duration_display:
+          type: string
+          description: Human-readable duration formatted by Odoo
+          example: "3.00 hours"
+        number_of_days:
+          type: number
+          format: float
+          description: Days deducted from allocation balance
+          example: 0.38
+        number_of_hours:
+          type: number
+          format: float
+          description: Hours deducted from allocation balance
+          example: 3.0
+        date_from:
+          type: string
+          format: date-time
+          description: UTC start datetime calculated by Odoo
+          example: "2026-10-15 07:00:00"
+        date_to:
+          type: string
+          format: date-time
+          description: UTC end datetime calculated by Odoo
+          example: "2026-10-15 10:00:00"
+        state:
+          type: string
+          description: Current state of time off request (e.g. confirm, validate, refuse)
+          example: "validate"
+        name:
+          type: string
+          nullable: true
+          description: Description or reason provided
+          example: "Personal appointment"
