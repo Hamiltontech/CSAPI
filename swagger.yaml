@@ -693,6 +693,22 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/EmployeeContract'
+              example:
+                status: success
+                message:
+                  - employee_id: 1223
+                    hrid: "3513"
+                    contracts:
+                      - id: 1
+                        date_start: "2026-01-01"
+                        date_end: "2026-12-31"
+                        state: "open"
+                        benefits: [1, 2, 3]
+                        structure_type_id:
+                          id: 8
+                          name: "Agent Salary"
+                        x_studio_contract_hours: 9
+                        x_studio_ramadan_hour_1: 9.0
         '400':
           description: Invalid query parameters
           content:
@@ -1814,6 +1830,26 @@ components:
           items:
             type: integer
           example: [1, 2, 3]
+        structure_type_id:
+          type: object
+          nullable: true
+          description: "Payroll Structure Type"
+          properties:
+            id:
+              type: integer
+              example: 8
+            name:
+              type: string
+              example: "Agent Salary"
+        x_studio_contract_hours:
+          type: number
+          description: "Contract Hours"
+          example: 9
+        x_studio_ramadan_hour_1:
+          type: number
+          format: float
+          description: "Ramadan Hour"
+          example: 9.0
 
     EmployeeAllocation:
       type: object
