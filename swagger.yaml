@@ -1833,7 +1833,7 @@ components:
         structure_type_id:
           type: object
           nullable: true
-          description: "Payroll Structure Type"
+          description: Salary Structure Type
           properties:
             id:
               type: integer
@@ -1843,12 +1843,12 @@ components:
               example: "Agent Salary"
         x_studio_contract_hours:
           type: number
-          description: "Contract Hours"
+          description: Contract Hours
           example: 9
         x_studio_ramadan_hour_1:
           type: number
           format: float
-          description: "Ramadan Hour"
+          description: Ramadan Hour
           example: 9.0
 
     EmployeeAllocation:
