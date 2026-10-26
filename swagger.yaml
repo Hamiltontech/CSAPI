@@ -704,6 +704,9 @@ paths:
                         date_end: "2026-12-31"
                         state: "open"
                         benefits: [1, 2, 3]
+                        contract_type_id:
+                          id: 1
+                          name: "Full Time Contract"
                         structure_type_id:
                           id: 8
                           name: "Agent Salary"
@@ -1830,6 +1833,17 @@ components:
           items:
             type: integer
           example: [1, 2, 3]
+        contract_type_id:
+          type: object
+          nullable: true
+          description: Contract Type
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Full Time Contract"
         structure_type_id:
           type: object
           nullable: true
